@@ -1,6 +1,5 @@
 import random
 from tkinter import *
-import string
 
 
 class Boggle():
@@ -13,6 +12,7 @@ class Boggle():
         self.soln = []
         self.board = [random.choices(list(self.freq_dict.keys()), list(
             self.freq_dict.values()), k=5) for j in range(self.size)]
+        print(self.solve())
         self.initTK()  # Build the board
         self.window.mainloop()  # Show the board
 
@@ -65,7 +65,6 @@ class Boggle():
                 else:
                     freq_dict[letter] = 1
         # Turn each letters count into frequencies (% chance this letter is picked at random)
-        print(freq_dict.keys())
         for letter in freq_dict.keys():
             freq_dict[letter] /= len(words) * 5
         return(freq_dict)
@@ -91,7 +90,7 @@ class Boggle():
 
         # All picks after first pick
         # Check that row or column only differ by one (neighbor in cardinal directions)
-        elif (abs(soln[-2][0] - soln[-1][0]) + abs(soln[-2][1] - soln[-1][1])) == 1:
+        elif abs(soln[-2][0] - soln[-1][0]) <= 1 and abs(soln[-2][1] - soln[-1][1]) <= 1:
             # Check if viable options still in trie
             return(self.chktrie(soln, self.trie))
         else:
@@ -187,7 +186,7 @@ class Boggle():
             l.append(trie)
         # Recursive Step: Look in every direction 1 by 1, recursively calling deeper until move is not valid or we find a word
         # I beleive this will work in a deapth first fashion
-        for d in [(0, 1), (0, -1), (-1, 0), (1, 0)]:
+        for d in [(0, 1), (0, -1), (-1, 0), (1, 0), (1, 1), (-1, 1), (1, -1), (-1, -1)]:
             if self.legal(x + d[0], y + d[1], trie) and (x + d[0], y + d[1]) not in path:
                 l.extend(self.search(
                     x + d[0], y + d[1], trie[self.board[x + d[0]][y + d[1]]], path + [(x + d[0], y + d[1])]))
@@ -207,7 +206,9 @@ class Boggle():
         return(False)
 
 
-# def main():
-#    B = Boggle()
-# if __name__ == '__main__':
-#    main()
+def main():
+    B = Boggle()
+
+
+if __name__ == '__main__':
+    main()
