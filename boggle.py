@@ -125,7 +125,7 @@ class Boggle():
 
         # Check if click is viable using ckSoln
         move = self.ckSoln(self.soln)
-        if move != False:
+        if move is not False:
             # Found a word, print message and reset the game
             if type(move) == str:
                 self.canvas.create_oval(self.soln[-1][1] * self.scale + 1, self.soln[-1][0] * self.scale + 1,
@@ -169,28 +169,27 @@ class Boggle():
 # Had trouble with the search function, remember to think about how scopeing works!
     def solve(self):
         '''Returns a list of all words found in the current puzzle'''
-        # Container for the found words
-        l = []
+        found_words = []
         # Loops over all the possible starting squares in the grid and calls the recursive step
         for x in range(self.size):
             for y in range(self.size):
-                l.extend(self.search(x, y, self.trie[self.board[x][y]], [(x, y)]))
-        return(l)
+                found_words.extend(self.search(x, y, self.trie[self.board[x][y]], [(x, y)]))
+        return(found_words)
 
     def search(self, x, y, trie, path):
         '''Recursively searches all possible viable paths from the start point (x,y)'''
         # Container for the found words
-        l = []
+        found_words = []
         # Base Case: We found a word, append it to the list
         if type(trie) == str:
-            l.append(trie)
+            found_words.append(trie)
         # Recursive Step: Look in every direction 1 by 1, recursively calling deeper until move is not valid or we find a word
         # I beleive this will work in a deapth first fashion
         for d in [(0, 1), (0, -1), (-1, 0), (1, 0), (1, 1), (-1, 1), (1, -1), (-1, -1)]:
             if self.legal(x + d[0], y + d[1], trie) and (x + d[0], y + d[1]) not in path:
-                l.extend(self.search(
+                found_words.extend(self.search(
                     x + d[0], y + d[1], trie[self.board[x + d[0]][y + d[1]]], path + [(x + d[0], y + d[1])]))
-        return(l)
+        return(found_words)
 
     def legal(self, x, y, trie):
         ''' Checks if new move is still on the board and checks if still a viable solution in the trie'''
